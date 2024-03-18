@@ -33,10 +33,11 @@ class Game {
     car1 = createSprite(width / 2 - 50, height - 100);
     car1.addImage("car1", car1_img);
     car1.scale = 0.07;
-
+    car1.addImage("blast",blastImg);
     car2 = createSprite(width / 2 + 100, height - 100);
     car2.addImage("car2", car2_img);
     car2.scale = 0.07;
+    car2.addImage("blast",blastImg);
 
     cars = [car1, car2];
 
@@ -144,7 +145,10 @@ class Game {
         //use data form the database to display the cars in x and y direction
         var x = allPlayers[plr].positionX;
         var y = height - allPlayers[plr].positionY;
-
+        var currentlife = allPlayers[plr].life;
+        if (currentlife <= 0) { 
+        cars[index - 1].changeImage("blast"); 
+        cars[index - 1].scale = 0.3; }
         cars[index - 1].position.x = x;
         cars[index - 1].position.y = y;
 
@@ -156,7 +160,7 @@ class Game {
           this.handleFuel(index);
           this.handlePowerCoins(index);
           this.handleObstacleCollision(index);
-
+          this.handleCarACollisionWithCarB(index);
           // Changing camera position in y direction
           camera.position.y = cars[index - 1].position.y;
         }
@@ -328,7 +332,19 @@ class Game {
       player.update();
     }
   }
-
+  handleCarACollisionWithCarB(index){ 
+    if (index === 1){
+       if (cars[index - 1].collide(cars[1])) 
+       { if (this.leftKeyActive) 
+        { player.positionX += 100; 
+        } else { player.positionX -= 100; } 
+        //Reducing Player Life
+         if (player.life > 0) 
+         { player.life -= 185 / 4; } player.update(); } } if (index === 2) 
+         { if (cars[index - 1].collide(cars[0])) 
+          { if (this.leftKeyActive) { player.positionX += 100; } else { player.positionX -= 100; } //Reducing Player Life 
+          if (player.life > 0) { player.life -= 185 / 4; } player.update(); } } 
+        }
   showRank() {
     swal({
       title: `Awesome!${"\n"}Rank${"\n"}${player.rank}`,
